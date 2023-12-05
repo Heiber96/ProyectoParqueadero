@@ -1,0 +1,27 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Confirmación de Entrada</title>
+</head>
+<body>
+
+    <h2>Confirmación de Entrada</h2>
+
+    <form action="/vehiculos/" method="post" th:object="${vehiculo}">
+        <!-- ... tus campos existentes ... -->
+        <label for="tipo">Tipo:</label>
+        <input type="text" id="tipo" name="tipo" th:field="*{tipo}" />
+
+        <label for="placa">Placa:</label>
+        <input type="text" id="placa" name="placa" th:field="*{placa}" />
+        <button type="submit">Enviar</button>
+        <a href="/vehiculos/listado"><button type="button">Listado</button></a>
+    </form>
+
+    <p th:text="${mensaje}"></p>
+
+</body>
+</html>
+

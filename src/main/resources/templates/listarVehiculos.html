@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Vehículos</title>
+</head>
+<body>
+    <h1>Listado de Vehículos</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Hora de Entrada</th>
+                <th>Hora de Salida</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="vehiculo : ${vehiculos}">
+                <td th:text="${vehiculo.id}"></td>
+                <td th:text="${vehiculo.placa}"></td>
+                <td th:text="${vehiculo.tipo}"></td>
+                <td th:text="${vehiculo.horaEntrada}"></td>
+                <td th:text="${vehiculo.horaSalida}"></td>
+                <td>
+                    <a th:href="@{/vehiculos/salida(id=${vehiculo.id})}">Procesar Salida</a>
+                    <a th:href="@{/vehiculos/tarifa(id=${vehiculo.id})}">Procesar Tarifa</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="/vehiculos/">Volver al Formulario</a>
+</body>
+</html>
+
+
