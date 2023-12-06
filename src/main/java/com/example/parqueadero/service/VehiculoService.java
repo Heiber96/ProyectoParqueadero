@@ -1,25 +1,29 @@
 package com.example.parqueadero.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.example.parqueadero.models.Vehiculo;
+import com.example.parqueadero.service.repository.VehiculoRepository;
+import java.util.List;
 
 @Service
 public class VehiculoService {
-    private static final List<Vehiculo> vehiculos = new ArrayList<>();
+    
+    private final VehiculoRepository vehiculoRepository;
+
+    
+    public VehiculoService(VehiculoRepository vehiculoRepository) {
+        this.vehiculoRepository = vehiculoRepository;
+    }
 
     public void guardarVehiculo(Vehiculo vehiculo) {
-        vehiculos.add(vehiculo);
+        vehiculoRepository.save(vehiculo);
     }
 
     public List<Vehiculo> obtenerTodosLosVehiculos() {
-        return new ArrayList<>(vehiculos);
+        return vehiculoRepository.findAll();
     }
 
-    public void eliminarVehiculo(int id) {
-        vehiculos.removeIf(vehiculo -> vehiculo.getId() == id);
+    public void eliminarVehiculo(Long id) {
+        vehiculoRepository.deleteById(id);
     }
 }

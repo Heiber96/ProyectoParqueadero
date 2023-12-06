@@ -11,11 +11,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "vehiculos")
 public class Vehiculo {
-    private static int contadorIds = 1;
+    private static Long contadorIds = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String tipo;
 
@@ -45,7 +45,7 @@ public class Vehiculo {
 
     // Otros constructores, getters y setters...
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
