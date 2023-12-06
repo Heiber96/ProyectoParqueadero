@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -7,23 +8,23 @@
 <body>
     <h1>Confirmación de Salida</h1>
     
-    <p>Placa: <span th:text="${vehiculo.placa} ?: 'Valor Predeterminado'"></span></p>
-    <p>Hora de Entrada: <span th:text="${vehiculo.horaEntrada}"></span></p>
-    <p>Hora de Salida: <span th:text="${horaSalida}"></span></p>
-    <p>Minutos Estacionado: <span th:text="${minutosEstacionado}"></span></p>
-    <p>Tarifa por Minuto: $<span th:text="${tarifaPorMinuto} ?: ${tarifaPorMinuto}"></span></p>
-    <p>Tarifa Total: $<span th:text="${tarifaTotal} ?: 'Valor Predeterminado'"></span></p>
+<p>Placa: <span th:text="${vehiculo.placa}"></span></p>
+<p>Hora de Entrada: <span th:text="${horaEntrada}"></span></p>
+<p>Hora de Salida: <span th:text="${horaSalida}"></span></p>
+<p>Minutos Estacionado: <span th:text="${minutosEstacionado}"></span></p>
+<p>Tarifa por Minuto: $<span th:text="${tarifaPorMinuto} ?: 'Valor Predeterminado'"></span></p>
+<p>Tarifa Total: $<span th:text="${tarifaTotal} ?: 'Valor Predeterminado'"></span></p>
        
-    <a href="/vehiculos/listado">Ver Listado</a>
+<a href="/vehiculos/listado">Ver Listado</a>
 
-    <script th:inline="javascript">
-        /* Imprime los valores en la consola */
-        console.log('Placa: ' + /*[[${vehiculo.placa}]]*/ '');
-        console.log('Hora de Entrada: ' + /*[[${vehiculo.horaEntrada}]]*/ '');
-        console.log('Hora de Salida: ' + /*[[${horaSalida}]]*/ '');
-        console.log('Minutos Estacionado: ' + /*[[${minutosEstacionado}]]*/ '');
-        console.log('Tarifa por Minuto: ' + /*[[${tarifaPorMinuto}]]*/ '');
-        console.log('Tarifa Total: ' + /*[[${tarifaTotal}]]*/ '');
-    </script>
+<script th:inline="javascript">
+    /* Imprime los valores en la consola */
+    console.log('Placa: ' + /*[[${vehiculo.placa}]]*/ '');
+    console.log('Hora de Entrada: ' + /*[[${horaEntrada}]]*/ '');
+    console.log('Hora de Salida: ' + /*[[${horaSalida}]]*/ '');
+    console.log('Minutos Estacionado: ' + /*[[${minutosEstacionado}]]*/ '');
+    console.log('Tarifa por Minuto: ' + /*[[${tarifaPorMinuto}]]*/ '');
+    console.log('Tarifa Total: ' + /*[[${tarifaTotal}]]*/ '');
+</script>
 </body>
 </html>

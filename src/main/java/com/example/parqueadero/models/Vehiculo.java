@@ -1,23 +1,49 @@
 package com.example.parqueadero.models;
 
 import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "vehiculos")
 public class Vehiculo {
     private static int contadorIds = 1;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String tipo;
+
+    @Column(unique = true)
     private String placa;
+
+    @Column(name = "hora_entrada")
     private LocalDateTime horaEntrada;
+
+    @Column(name = "hora_salida")
     private LocalDateTime horaSalida;
+
+    @Column(name = "tiempo_restante")
     private int tiempoRestante;
 
     public Vehiculo() {
         this.id = contadorIds++;
         this.horaEntrada = LocalDateTime.now();
+        this.horaSalida = null;
     }
 
-    // Otros constructores, getters y setters
+    public void marcarHoraSalida() {
+        if (horaSalida == null) {
+            this.horaSalida = LocalDateTime.now();
+        }
+    }
+
+    // Otros constructores, getters y setters...
 
     public int getId() {
         return id;
@@ -63,5 +89,3 @@ public class Vehiculo {
         this.tiempoRestante = tiempoRestante;
     }
 }
-
-

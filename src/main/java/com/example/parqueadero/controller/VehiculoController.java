@@ -23,45 +23,53 @@ public class VehiculoController {
     private Tarifa tarifa;
 
     private int calcularMinutosEstacionado(LocalDateTime horaEntrada, LocalDateTime horaSalida) {
-        return (horaEntrada != null && horaSalida != null) ? (int) ChronoUnit.MINUTES.between(horaEntrada, horaSalida) : 0;
+        if (horaEntrada != null && horaSalida != null) {
+            return (int) ChronoUnit.MINUTES.between(horaEntrada, horaSalida);
+        } else {
+            return 0;
+        }
     }
 
     @PostMapping("/salida")
-    public String procesarSalida(@ModelAttribute Vehiculo vehiculo, Model model) {
-        try {
-            LocalDateTime horaEntrada = vehiculo.getHoraEntrada();
-            LocalDateTime horaSalida = LocalDateTime.now();
+public String procesarSalida(@ModelAttribute Vehiculo vehiculo, Model model) {
+    try {
+        LocalDateTime horaEntrada = vehiculo.getHoraEntrada();
+        LocalDateTime horaSalida = LocalDateTime.now(); // Nueva asignación para horaSalida
 
-            // Calcula el tiempo transcurrido en minutos
-            int minutosEstacionado = calcularMinutosEstacionado(horaEntrada, horaSalida);
+        System.out.println("Hora de Entrada: " + horaEntrada);
+        System.out.println("Hora de Salida: " + horaSalida);
+        // Calcula el tiempo transcurrido en minutos
+        int minutosEstacionado = calcularMinutosEstacionado(horaEntrada, horaSalida);
 
-            // Obtiene las tarifas desde el objeto de Tarifa
-            double tarifaPorHora = tarifa.getTarifaPorHora();
-            double tarifaPorMinuto = tarifa.getTarifaPorMinuto();
+        // Obtiene las tarifas desde el objeto de Tarifa
+        double tarifaPorHora = tarifa.getTarifaPorHora();
+        double tarifaPorMinuto = tarifa.getTarifaPorMinuto();
 
-            // Calcula la tarifa total
-            double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora) + (minutosEstacionado % 60 * tarifaPorMinuto);
+        // Calcula la tarifa total
+        double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora) + (minutosEstacionado % 60 * tarifaPorMinuto);
 
-            // Asigna la hora de salida al vehículo
-            vehiculo.setHoraSalida(horaSalida);
+        // Asigna la hora de salida al vehículo después de calcular minutosEstacionado
+        vehiculo.setHoraSalida(horaSalida);
 
-            // Guarda el vehículo en la base de datos
-            vehiculoService.guardarVehiculo(vehiculo);
+        // Guarda el vehículo en la base de datos
+        vehiculoService.guardarVehiculo(vehiculo);
 
-            // Agrega los atributos al modelo
-            model.addAttribute("vehiculo", vehiculo);
-            model.addAttribute("minutosEstacionado", minutosEstacionado);
-            model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
-            model.addAttribute("tarifaPorHora", tarifaPorHora);
-            model.addAttribute("tarifaTotal", tarifaTotal);
+        // Agrega los atributos al modelo
+        model.addAttribute("vehiculo", vehiculo);
+        model.addAttribute("horaSalida", horaSalida);
+        model.addAttribute("horaEntrada", horaEntrada);
+        model.addAttribute("minutosEstacionado", minutosEstacionado);
+        model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
+        model.addAttribute("tarifaPorHora", tarifaPorHora);
+        model.addAttribute("tarifaTotal", tarifaTotal);
 
-            return "confirmacionSalida";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Ocurrió un error al procesar la salida.");
-            return "errorPage";
-        }
+        return "confirmacionSalida";
+    } catch (Exception e) {
+        e.printStackTrace();
+        model.addAttribute("error", "Ocurrió un error al procesar la salida.");
+        return "errorPage";
     }
+}
 
     
 
