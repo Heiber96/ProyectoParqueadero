@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "vehiculos")
 public class Vehiculo {
-    private static Long contadorIds = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +31,9 @@ public class Vehiculo {
     private int tiempoRestante;
 
     public Vehiculo() {
-        this.id = contadorIds++;
+        // No es necesario asignar un ID aquí, ya que la base de datos lo generará automáticamente
         this.horaEntrada = LocalDateTime.now();
-        this.horaSalida = null;
+        
     }
 
     public void marcarHoraSalida() {

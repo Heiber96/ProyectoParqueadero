@@ -27,7 +27,7 @@
                 <td th:text="${vehiculo.horaEntrada}"></td>
                 <td th:text="${vehiculo.horaSalida}"></td>
                 <td>
-                    <a th:href="@{/vehiculos/salida(id=${vehiculo.id})}">Procesar Salida</a>
+                    <a th:href="@{/vehiculos/salida/{id}(id=${vehiculo.id})}">Procesar Salida</a>
                     <a th:href="@{/vehiculos/tarifa(id=${vehiculo.id})}">Procesar Tarifa</a>
                 </td>
             </tr>

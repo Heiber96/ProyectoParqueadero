@@ -1,30 +1,40 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmación de Salida</title>
 </head>
+
 <body>
     <h1>Confirmación de Salida</h1>
-    
-<p>Placa: <span th:text="${vehiculo.placa}"></span></p>
-<p>Hora de Entrada: <span th:text="${horaEntrada}"></span></p>
-<p>Hora de Salida: <span th:text="${horaSalida}"></span></p>
-<p>Minutos Estacionado: <span th:text="${minutosEstacionado}"></span></p>
-<p>Tarifa por Minuto: $<span th:text="${tarifaPorMinuto} ?: 'Valor Predeterminado'"></span></p>
-<p>Tarifa Total: $<span th:text="${tarifaTotal} ?: 'Valor Predeterminado'"></span></p>
-       
-<a href="/vehiculos/listado">Ver Listado</a>
 
-<script th:inline="javascript">
-    /* Imprime los valores en la consola */
-    console.log('Placa: ' + /*[[${vehiculo.placa}]]*/ '');
-    console.log('Hora de Entrada: ' + /*[[${horaEntrada}]]*/ '');
-    console.log('Hora de Salida: ' + /*[[${horaSalida}]]*/ '');
-    console.log('Minutos Estacionado: ' + /*[[${minutosEstacionado}]]*/ '');
-    console.log('Tarifa por Minuto: ' + /*[[${tarifaPorMinuto}]]*/ '');
-    console.log('Tarifa Total: ' + /*[[${tarifaTotal}]]*/ '');
-</script>
+    <form action="/vehiculos/salida" method="post" th:object="${vehiculo}">
+        <input type="hidden" th:field="*{id}" />
+        <p>Placa: <span th:text="${vehiculo.placa}"></span></p>
+        <p>Hora de Entrada: <span th:text="${#temporals.format(vehiculo.horaEntrada, 'yyyy-MM-dd HH:mm:ss')}"></span>
+        </p>
+        <p>Hora de Salida: <span th:text="${horaSalidaFormateada}"></span></p>
+        <p>Minutos Estacionado: <span th:text="${minutosEstacionado}"></span></p>
+        <p>Tarifa por Minuto: $<span th:text="${tarifaPorMinuto} ?: 'Valor Predeterminado'"></span></p>
+        <p>Tarifa Total: $<span th:text="${tarifaTotal} ?: 'Valor Predeterminado'"></span></p>
+
+    </form>
+
+    <a href="/vehiculos/listado">Ver Listado</a>
+
+    <script th:inline="javascript">
+        /* Imprime los valores en la consola */
+        console.log('Vehiculo: ' + /*[[${vehiculo}]]*/ '');
+        console.log('Hora de Salida en la vista: ' + /*[[${vehiculo.horaSalida}]]*/ '');
+        console.log('Placa: ' + /*[[${vehiculo.placa}]]*/ '');
+        console.log('Hora de Entrada: ' + /*[[${vehiculo.horaEntrada}]]*/ '');
+        console.log('Hora de Salida: ' + /*[[${vehiculo.horaSalida}]]*/ '');
+        console.log('Minutos Estacionado: ' + /*[[${minutosEstacionado}]]*/ '');
+        console.log('Tarifa por Minuto: ' + /*[[${tarifaPorMinuto}]]*/ '');
+        console.log('Tarifa Total: ' + /*[[${tarifaTotal}]]*/ '');
+    </script>
 </body>
+
 </html>
