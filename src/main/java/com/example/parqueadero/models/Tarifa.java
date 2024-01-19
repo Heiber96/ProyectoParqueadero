@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Component
 @Entity
-@Table
+@Table(name = "tarifas")
 public class Tarifa {
 
     @Id

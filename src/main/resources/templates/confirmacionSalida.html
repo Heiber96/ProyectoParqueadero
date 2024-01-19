@@ -12,29 +12,44 @@
 
     <form action="/vehiculos/salida" method="post" th:object="${vehiculo}">
         <input type="hidden" th:field="*{id}" />
-        <p>Placa: <span th:text="${vehiculo.placa}"></span></p>
+
+        <!-- Nuevo campo para seleccionar el tipo de vehículo -->
+        <label for="tipo">Tipo de Vehículo:</label>
+        <select id="tipo" name="tipo" th:field="*{tipo}">
+            <option value="carro">Carro</option>
+            <option value="moto">Moto</option>
+        </select>
+
+        <p>Placa: <span th:text="*{placa}"></span></p>
         <p>Hora de Entrada: <span th:text="${#temporals.format(vehiculo.horaEntrada, 'yyyy-MM-dd HH:mm:ss')}"></span>
         </p>
-        <p>Hora de Salida: <span th:text="${horaSalidaFormateada}"></span></p>
+        <p>Hora de Salida: <span th:text="*{horaSalidaFormateada}"></span></p>
         <p>Minutos Estacionado: <span th:text="${minutosEstacionado}"></span></p>
-        <p>Tarifa por Minuto: $<span th:text="${tarifaPorMinuto} ?: 'Valor Predeterminado'"></span></p>
-        <p>Tarifa Total: $<span th:text="${tarifaTotal} ?: 'Valor Predeterminado'"></span></p>
+        <p>Tarifa por Minuto: <span th:text="${tarifaPorMinuto}"></span></p>
+        <!-- Nueva línea para mostrar la tarifa por hora -->
+        <p>Tarifa por Hora: <span th:text="${tarifaPorHora}"></span></p>
+        <p>Tarifa Total: <span th:text="${tarifaTotal}"></span></p>
 
+        <!-- Modificamos el botón de submit para que esté dentro del formulario -->
+        <button type="submit">Confirmar Salida</button>
     </form>
 
     <a href="/vehiculos/listado">Ver Listado</a>
 
     <script th:inline="javascript">
         /* Imprime los valores en la consola */
-        console.log('Vehiculo: ' + /*[[${vehiculo}]]*/ '');
-        console.log('Hora de Salida en la vista: ' + /*[[${vehiculo.horaSalida}]]*/ '');
-        console.log('Placa: ' + /*[[${vehiculo.placa}]]*/ '');
-        console.log('Hora de Entrada: ' + /*[[${vehiculo.horaEntrada}]]*/ '');
-        console.log('Hora de Salida: ' + /*[[${vehiculo.horaSalida}]]*/ '');
-        console.log('Minutos Estacionado: ' + /*[[${minutosEstacionado}]]*/ '');
-        console.log('Tarifa por Minuto: ' + /*[[${tarifaPorMinuto}]]*/ '');
-        console.log('Tarifa Total: ' + /*[[${tarifaTotal}]]*/ '');
+        console.log('Vehiculo: [[${vehiculo}]]');
+        console.log('Hora de Salida en la vista: [[${vehiculo.horaSalida}]]');
+        console.log('Placa: [[${vehiculo.placa}]]');
+        console.log('Hora de Entrada: [[${vehiculo.horaEntrada}]]');
+        console.log('Hora de Salida: [[${vehiculo.horaSalida}]]');
+        console.log('Minutos Estacionado: [[${minutosEstacionado}]]');
+        console.log('Tarifa por Minuto: [[${tarifaPorMinuto}]]');
+        console.log('Tarifa por Hora: [[${tarifaPorHora}]]');
+        console.log('Tarifa Total: [[${tarifaTotal}]]');
     </script>
+
 </body>
 
 </html>
+

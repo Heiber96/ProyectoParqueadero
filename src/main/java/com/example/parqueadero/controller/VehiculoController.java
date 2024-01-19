@@ -3,13 +3,14 @@ package com.example.parqueadero.controller;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.format.DateTimeFormatter;
-import com.example.parqueadero.models.Tarifa;
 import com.example.parqueadero.models.Vehiculo;
+import com.example.parqueadero.service.TarifaService;
 import com.example.parqueadero.service.VehiculoService;
 
 @Controller
@@ -19,64 +20,81 @@ public class VehiculoController {
     @Autowired
     private VehiculoService vehiculoService;
 
+    
+
     @Autowired
-    private Tarifa tarifa;
+    private TarifaService tarifaService; // Cambio aquí
 
     private int calcularMinutosEstacionado(LocalDateTime horaEntrada, LocalDateTime horaSalida) {
-        if (horaEntrada != null && horaSalida != null) {
-            return (int) ChronoUnit.MINUTES.between(horaEntrada, horaSalida);
-        } else {
-            return 0;
-        }
+        return (horaEntrada != null && horaSalida != null) ?
+                (int) ChronoUnit.MINUTES.between(horaEntrada, horaSalida) : 0;
     }
 
     @RequestMapping(value = "/salida", method = { RequestMethod.GET, RequestMethod.POST })
-    public String procesarSalida(@ModelAttribute Vehiculo vehiculo, Model model) {
-        try {
-            Optional<Vehiculo> optionalVehiculo = vehiculoService.obtenerVehiculoPorId(vehiculo.getId());
+public String procesarSalida(@ModelAttribute Vehiculo vehiculo, Model model) {
+    try {
+        Optional<Vehiculo> optionalVehiculo = vehiculoService.obtenerVehiculoPorId(vehiculo.getId());
 
-            if (optionalVehiculo.isPresent()) {
-                Vehiculo vehiculoPersistente = optionalVehiculo.get();
+        if (optionalVehiculo.isPresent()) {
+            Vehiculo vehiculoPersistente = optionalVehiculo.get();
+
+            if (vehiculoPersistente.getHoraSalida() == null) {
                 vehiculoPersistente.marcarHoraSalida();
                 vehiculoService.guardarVehiculo(vehiculoPersistente);
 
-                // Formatea la hora de salida
-                String horaSalidaFormateada = vehiculoPersistente.getHoraSalida() != null
-                        ? vehiculoPersistente.getHoraSalida().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        : "";
+                // Recarga el vehículo actualizado desde la base de datos
+                vehiculoPersistente = vehiculoService.obtenerVehiculoPorId(vehiculo.getId()).orElse(null);
 
                 // Calcula el tiempo transcurrido en minutos
-                LocalDateTime horaEntrada = vehiculoPersistente.getHoraEntrada();
-                LocalDateTime horaSalida = vehiculoPersistente.getHoraSalida();
-                int minutosEstacionado = calcularMinutosEstacionado(horaEntrada, horaSalida);
+                long minutosEstacionado = calcularMinutosEstacionado(vehiculoPersistente.getHoraEntrada(),
+                        vehiculoPersistente.getHoraSalida());
 
-                // Obtiene las tarifas desde el objeto de Tarifa
-                double tarifaPorHora = tarifa.getTarifaPorHora();
-                double tarifaPorMinuto = tarifa.getTarifaPorMinuto();
+                // Obtiene las tarifas desde el servicio de Tarifa
+                double tarifaPorHora;
+                double tarifaPorMinuto = tarifaService.obtenerTarifaPorMinuto();
+
+                // Verifica el tipo de vehículo y asigna las tarifas correspondientes
+                if ("carro".equals(vehiculoPersistente.getTipo())) {
+                    tarifaPorHora = 90.0;  // Tarifa para carros
+                } else if ("moto".equals(vehiculoPersistente.getTipo())) {
+                    tarifaPorHora = 60.0;  // Tarifa para motos
+                } else {
+                    // Tipo de vehículo no reconocido, manejar de acuerdo a tus requisitos
+                    tarifaPorHora = 0.0;   // Otra tarifa por defecto o manejo de error
+                }
 
                 // Calcula la tarifa total
-                double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora)
-                        + (minutosEstacionado % 60 * tarifaPorMinuto);
+                double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora) + (minutosEstacionado % 60 * tarifaPorMinuto);
 
                 // Agrega los atributos al modelo
-                model.addAttribute("horaSalidaFormateada", horaSalidaFormateada);
-                model.addAttribute("horaEntrada", vehiculoPersistente.getHoraEntrada() != null ? vehiculoPersistente.getHoraEntrada() : "");
-                model.addAttribute("horaSalidaFormateada", horaSalidaFormateada);
-                model.addAttribute("minutosEstacionado", minutosEstacionado >= 0 ? minutosEstacionado : "");
-                model.addAttribute("tarifaPorMinuto", tarifaPorMinuto >= 0 ? tarifaPorMinuto : "");
-                model.addAttribute("tarifaTotal", tarifaTotal >= 0 ? tarifaTotal : "");
+                model.addAttribute("vehiculo", vehiculoPersistente);
+                model.addAttribute("horaSalidaFormateada", vehiculoPersistente.getHoraSalida() != null
+                        ? vehiculoPersistente.getHoraSalida().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        : "");
+                model.addAttribute("horaEntrada", vehiculoPersistente.getHoraEntrada() != null
+                        ? vehiculoPersistente.getHoraEntrada().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        : "");
+                model.addAttribute("minutosEstacionado", minutosEstacionado);
+                model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
+                model.addAttribute("tarifaPorHora", tarifaPorHora);  // Nuevo atributo
+                model.addAttribute("tarifaTotal", tarifaTotal);
 
                 return "confirmacionSalida";
             } else {
-                model.addAttribute("error", "Vehículo no encontrado en la base de datos.");
+                model.addAttribute("error", "Este vehículo ya ha salido anteriormente.");
                 return "errorPage";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Ocurrió un error al procesar la salida.");
+        } else {
+            model.addAttribute("error", "Vehículo no encontrado en la base de datos.");
             return "errorPage";
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        model.addAttribute("error", "Ocurrió un error al procesar la salida.");
+        return "errorPage";
     }
+}
+    
 
 
     @GetMapping("/listado")
@@ -116,23 +134,48 @@ public class VehiculoController {
         }
     }
 
-    @GetMapping("/salida/{id}")
-    public String mostrarFormularioSalida(@PathVariable Long id, Model model) {
-        // Obtén el vehículo desde el Optional
-        Optional<Vehiculo> optionalVehiculo = vehiculoService.obtenerVehiculoPorId(id);
+    @RequestMapping(value = "/salida/{id}", method = RequestMethod.GET)
+public String mostrarFormularioSalida(@PathVariable Long id, Model model) {
+    // Obtén el vehículo desde el Optional
+    Optional<Vehiculo> optionalVehiculo = vehiculoService.obtenerVehiculoPorId(id);
 
-        if (optionalVehiculo.isPresent()) {
-            // Si el vehículo está presente, obtén el objeto Vehiculo
-            Vehiculo vehiculo = optionalVehiculo.get();
+    if (optionalVehiculo.isPresent()) {
+        // Si el vehículo está presente, obtén el objeto Vehiculo
+        Vehiculo vehiculo = optionalVehiculo.get();
 
-            // Agrega el vehículo al modelo
-            model.addAttribute("vehiculo", vehiculo);
+        // Verifica si ya tiene hora de salida
+        if (vehiculo.getHoraSalida() == null) {
+            // Marca la hora de salida
+            vehiculo.marcarHoraSalida();
 
-            return "confirmacionSalida";
-        } else {
-            // Maneja el caso en que no se encuentra el vehículo
-            model.addAttribute("error", "Vehículo no encontrado");
-            return "errorPage";
+            // Actualiza los datos en la base de datos (puedes llamar a un servicio para hacer esto)
+            vehiculoService.actualizarVehiculo(vehiculo);
         }
+
+        // Calcula el tiempo transcurrido en minutos utilizando el método de la clase Vehiculo
+        long minutosEstacionado = vehiculo.calcularMinutosEstacionado();
+
+        // Obtiene las tarifas desde el objeto de Tarifa
+        double tarifaPorHora = tarifaService.obtenerTarifaPorHora();
+        double tarifaPorMinuto = tarifaService.obtenerTarifaPorMinuto();
+
+        // Calcula la tarifa total
+        double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora) + (minutosEstacionado % 60 * tarifaPorMinuto);
+
+        // Agrega el vehículo al modelo
+        model.addAttribute("vehiculo", vehiculo);
+        model.addAttribute("minutosEstacionado", minutosEstacionado);
+        model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
+        model.addAttribute("tarifaTotal", tarifaTotal);
+
+        return "confirmacionSalida";
+    } else {
+        // Maneja el caso en que no se encuentra el vehículo
+        model.addAttribute("error", "Vehículo no encontrado");
+        return "errorPage";
     }
 }
+
+    // Resto del código...
+}
+

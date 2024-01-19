@@ -1,12 +1,14 @@
 package com.example.parqueadero.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "vehiculos")
@@ -33,12 +35,23 @@ public class Vehiculo {
     public Vehiculo() {
         // No es necesario asignar un ID aquí, ya que la base de datos lo generará automáticamente
         this.horaEntrada = LocalDateTime.now();
-        
     }
 
     public void marcarHoraSalida() {
-        if (horaSalida == null) {
-            this.horaSalida = LocalDateTime.now();
+        this.horaSalida = LocalDateTime.now();
+    }
+
+    public String getHoraSalidaFormateada() {
+        return horaSalida != null
+                ? horaSalida.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : "";
+    }
+
+    public long calcularMinutosEstacionado() {
+        if (horaEntrada != null && horaSalida != null) {
+            return ChronoUnit.MINUTES.between(horaEntrada, horaSalida);
+        } else {
+            return 0;
         }
     }
 
@@ -88,3 +101,4 @@ public class Vehiculo {
         this.tiempoRestante = tiempoRestante;
     }
 }
+
