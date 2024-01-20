@@ -32,6 +32,22 @@ public class VehiculoService {
         vehiculoRepository.deleteById(id);
     }
 
+    public List<Vehiculo> obtenerVehiculosNoSalidos() {
+        return vehiculoRepository.findByHoraSalidaIsNull();
+    }
+
+    public List<Vehiculo> obtenerVehiculosSalidos() {
+        return vehiculoRepository.findByHoraSalidaIsNotNull();
+    }
+
+    public Vehiculo buscarVehiculoSalidoPorPlaca(String placa) {
+        return vehiculoRepository.findByPlacaAndHoraSalidaIsNotNull(placa);
+    }
+
+    public Vehiculo buscarVehiculoConHoraSalidaPorPlaca(String placa) {
+        return vehiculoRepository.findByPlacaAndHoraSalidaIsNotNull(placa);
+    }
+
     public void actualizarVehiculo(Vehiculo vehiculo) {
         if (vehiculo != null && vehiculo.getId() != null) {
             vehiculoRepository.save(vehiculo);

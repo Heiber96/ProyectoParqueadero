@@ -28,13 +28,14 @@
                 <td th:text="${vehiculo.horaSalida}"></td>
                 <td>
                     <a th:href="@{/vehiculos/salida/{id}(id=${vehiculo.id})}">Procesar Salida</a>
-                    <a th:href="@{/vehiculos/tarifa(id=${vehiculo.id})}">Procesar Tarifa</a>
+                    <a th:href="@{/vehiculos/vehiculos-salidos}">Listado Vehiculos Salida</a>
                 </td>
             </tr>
         </tbody>
     </table>
 
     <a href="/vehiculos/">Volver al Formulario</a>
+    <a th:href="@{/vehiculos/vehiculos-salidos}">Listado Vehiculos Salida</a>
 </body>
 </html>
 

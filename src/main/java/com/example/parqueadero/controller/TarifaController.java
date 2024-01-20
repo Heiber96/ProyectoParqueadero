@@ -14,10 +14,12 @@ public class TarifaController {
 
     @GetMapping("/tarifas")
     public String mostrarTarifas(Model model) {
-        double tarifaPorHora = tarifaService.obtenerTarifaPorHora();
-        double tarifaPorMinuto = tarifaService.obtenerTarifaPorMinuto();
-        model.addAttribute("tarifaPorHora", tarifaPorHora);
-        model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
+        double tarifaPorMinutoCarro = tarifaService.obtenerTarifaPorMinutoCarro();
+        double tarifaPorMinutoMoto = tarifaService.obtenerTarifaPorMinutoMoto();
+
+        model.addAttribute("tarifaPorMinutoCarro", tarifaPorMinutoCarro);
+        model.addAttribute("tarifaPorMinutoMoto", tarifaPorMinutoMoto);
+
         return "confirmacionTarifa";
     } 
 

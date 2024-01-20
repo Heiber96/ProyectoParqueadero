@@ -1,37 +1,23 @@
-package com.example.parqueadero.service;
+// TarifaService.java
 
+package com.example.parqueadero.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.parqueadero.service.TarifaServiceImpl.TarifaCalculadoraService;
-import com.example.parqueadero.service.TarifaServiceImpl.TarifaPorHoraService;
-import com.example.parqueadero.service.TarifaServiceImpl.TarifaPorMinutoService;
-
 @Service
-public class TarifaService implements TarifaPorHoraService, TarifaPorMinutoService, TarifaCalculadoraService {
+public class TarifaService {
 
-    private static final double TARIFA_POR_HORA = 4500;
-    private static final double TARIFA_POR_MINUTO = 75;
-    private static final int MAX_MINUTOS_AL_DIA = 1440;
+    private static final double TARIFA_POR_MINUTO_CARRO = 90.0;
+    private static final double TARIFA_POR_MINUTO_MOTO = 75.0;
 
-    @Override
-    public double obtenerTarifaPorHora() {
-        return TARIFA_POR_HORA;
+    public double obtenerTarifaPorMinutoCarro() {
+        System.out.println("Obteniendo tarifa por minuto para carro: " + TARIFA_POR_MINUTO_CARRO);
+        return TARIFA_POR_MINUTO_CARRO;
     }
 
-    @Override
-    public double obtenerTarifaPorMinuto() {
-        return TARIFA_POR_MINUTO;
-    }
-
-    @Override
-    public double calcularTarifa(int minutos) {
-        if (minutos < 0) {
-            throw new IllegalArgumentException("El número de minutos no puede ser negativo");
-        }
-
-        int minutosLimitados = Math.min(minutos, MAX_MINUTOS_AL_DIA);
-        return minutosLimitados * TARIFA_POR_MINUTO;
+    public double obtenerTarifaPorMinutoMoto() {
+        System.out.println("Obteniendo tarifa por minuto para moto: " + TARIFA_POR_MINUTO_MOTO);
+        return TARIFA_POR_MINUTO_MOTO;
     }
 }
  

@@ -10,9 +10,11 @@
     <h2>Confirmación de Entrada</h2>
 
     <form action="/vehiculos/" method="post" th:object="${vehiculo}">
-        <!-- ... tus campos existentes ... -->
         <label for="tipo">Tipo:</label>
-        <input type="text" id="tipo" name="tipo" th:field="*{tipo}" />
+        <select id="tipo" name="tipo" th:field="*{tipo}">
+            <option value="carro">Carro</option>
+            <option value="moto">Moto</option>
+        </select>
 
         <label for="placa">Placa:</label>
         <input type="text" id="placa" name="placa" th:field="*{placa}" />
