@@ -1,16 +1,73 @@
-<!-- listarVehiculosSalidos.html -->
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Historial de Vehículos Salidos</title>
+    <!-- Agrega otros estilos si es necesario -->
+</head>
+<body>
+    <div class="container">
+        <h1>Historial de Vehículos Salidos</h1>
+        
+        <!-- Formulario de búsqueda por placa -->
+        <form action="#" method="get">
+            <div class="form-row">
+                <div class="col-8">
+                    <label for="placa">Buscar por Placa:</label>
+                    <input type="text" id="placa" name="placa" class="form-control" />
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </div>
+            </div>
+        </form>
 
-<h2>Vehículos que han Salido</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Placa</th>
+                    <th>Tipo</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Salida</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterar sobre los vehículos salidos -->
+                <tr th:each="vehiculo : ${vehiculosSalidos}">
+                    <!-- Mostrar todos los vehículos salidos o filtrar por placa si se ha enviado el formulario -->
+                    <th:block th:if="${#strings.isEmpty(param.placa) or vehiculo.placa == param.placa}">
+                        <td th:text="${vehiculo.id}"></td>
+                        <td th:text="${vehiculo.placa}"></td>
+                        <td th:text="${vehiculo.tipo}"></td>
+                        <td th:text="${#temporals.format(vehiculo.horaEntrada, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                        <td th:text="${#temporals.format(vehiculo.horaSalida, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                    </th:block>
+                </tr>
+            </tbody>
+        </table>
 
-<table>
-    <!-- Aquí muestra la tabla con la información de los vehículos salidos -->
-</table>
+        <a href="/vehiculos/">Volver al Formulario</a>
+        <a th:href="@{/vehiculos/listado}">Listado Vehiculos en Parqueadero</a>
+    </div>
 
-<h3>Buscar por Placa</h3>
-<form action="/vehiculo-salido" method="get">
-    <label for="placa">Placa:</label>
-    <input type="text" id="placa" name="placa" required>
-    <button type="submit">Buscar</button>
-    <a href="/vehiculos/listado">Ver Listado</a>
-</form>
+    <!-- Asegúrate de incluir la biblioteca Bootstrap y otros scripts JS si es necesario -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
 

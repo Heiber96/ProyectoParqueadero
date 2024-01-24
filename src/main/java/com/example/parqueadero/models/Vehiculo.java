@@ -20,7 +20,7 @@ public class Vehiculo {
 
     private String tipo;
 
-    @Column(unique = true)
+    @Column
     private String placa;
 
     @Column(name = "hora_entrada")
@@ -32,13 +32,18 @@ public class Vehiculo {
     @Column(name = "tiempo_restante")
     private int tiempoRestante;
 
+    @Column(name = "salido")
+    private Boolean salido;
+
     public Vehiculo() {
         // No es necesario asignar un ID aquí, ya que la base de datos lo generará automáticamente
         this.horaEntrada = LocalDateTime.now();
+        this.salido = false; // Por defecto, un vehículo no ha salido
     }
 
     public void marcarHoraSalida() {
         this.horaSalida = LocalDateTime.now();
+        this.salido = true;
     }
 
     public String getHoraSalidaFormateada() {
@@ -53,6 +58,14 @@ public class Vehiculo {
         } else {
             return 0;
         }
+    }
+
+    public boolean isSalido() {
+        return salido;
+    }
+
+    public void setSalido(boolean salido) {
+        this.salido = salido;
     }
 
     // Otros constructores, getters y setters...
@@ -101,4 +114,3 @@ public class Vehiculo {
         this.tiempoRestante = tiempoRestante;
     }
 }
-

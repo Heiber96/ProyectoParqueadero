@@ -40,12 +40,20 @@ public class VehiculoService {
         return vehiculoRepository.findByHoraSalidaIsNotNull();
     }
 
+    public List<Vehiculo> obtenerHistorialPorPlaca(String placa) {
+        return vehiculoRepository.findByPlaca(placa);
+    }
+
     public Vehiculo buscarVehiculoSalidoPorPlaca(String placa) {
         return vehiculoRepository.findByPlacaAndHoraSalidaIsNotNull(placa);
     }
 
     public Vehiculo buscarVehiculoConHoraSalidaPorPlaca(String placa) {
         return vehiculoRepository.findByPlacaAndHoraSalidaIsNotNull(placa);
+    }
+
+    public List<String> obtenerHistorialPlacasVehiculosSalidos() {
+        return vehiculoRepository.obtenerHistorialPlacasVehiculosSalidos();
     }
 
     public void actualizarVehiculo(Vehiculo vehiculo) {
@@ -57,3 +65,4 @@ public class VehiculoService {
         }
     }
 }
+

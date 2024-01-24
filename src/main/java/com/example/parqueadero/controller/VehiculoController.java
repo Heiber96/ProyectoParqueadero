@@ -55,20 +55,8 @@ public class VehiculoController {
                             ? tarifaService.obtenerTarifaPorMinutoCarro()
                             : tarifaService.obtenerTarifaPorMinutoMoto();
 
-                    // Verifica el tipo de vehículo y asigna las tarifas correspondientes
-                    double tarifaPorHora;
-                    if ("carro".equals(vehiculoPersistente.getTipo())) {
-                        tarifaPorHora = 90.0; // Tarifa para carros
-                    } else if ("moto".equals(vehiculoPersistente.getTipo())) {
-                        tarifaPorHora = 75.0; // Tarifa para motos
-                    } else {
-                        // Tipo de vehículo no reconocido, manejar de acuerdo a tus requisitos
-                        tarifaPorHora = 1400.0; // Otra tarifa por defecto o manejo de error
-                    }
-
                     // Calcula la tarifa total
-                    double tarifaTotal = (minutosEstacionado / 60.0 * tarifaPorHora)
-                            + (minutosEstacionado % 60 * tarifaPorMinuto);
+                    double tarifaTotal = minutosEstacionado * tarifaPorMinuto;
 
                     // Agrega los atributos al modelo
                     model.addAttribute("vehiculo", vehiculoPersistente);
@@ -82,7 +70,7 @@ public class VehiculoController {
                             : "");
                     model.addAttribute("minutosEstacionado", minutosEstacionado);
                     model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
-                    model.addAttribute("tarifaPorHora", tarifaPorHora);
+
                     model.addAttribute("tarifaTotal", tarifaTotal);
 
                     return "confirmacionSalida";
@@ -114,36 +102,38 @@ public class VehiculoController {
     }
 
     @PostMapping("/")
-    public String procesarEntrada(@ModelAttribute Vehiculo vehiculo, Model model) {
-        try {
-            // Establece la hora de entrada antes de guardar el vehículo
-            vehiculo.setHoraEntrada(LocalDateTime.now());
+public String procesarEntrada(@ModelAttribute Vehiculo vehiculo, Model model) {
+    try {
+        // Guarda solo la placa y la hora de entrada en la base de datos
+        Vehiculo vehiculoGuardado = new Vehiculo();
+        vehiculoGuardado.setPlaca(vehiculo.getPlaca());
+        vehiculoGuardado.setTipo(vehiculo.getTipo());  // Asegúrate de establecer el tipo correctamente
+        vehiculoGuardado.setHoraEntrada(LocalDateTime.now());
+        vehiculoService.guardarVehiculo(vehiculoGuardado);
 
-            // Guarda el vehículo en la base de datos
-            vehiculoService.guardarVehiculo(vehiculo);
+        // Actualiza la tarifa según el tipo de vehículo guardado
+        double tarifaPorMinuto = (vehiculoGuardado.getTipo().equalsIgnoreCase("carro"))
+                ? tarifaService.obtenerTarifaPorMinutoCarro()
+                : tarifaService.obtenerTarifaPorMinutoMoto();
 
-            // Muestra la placa ingresada en la consola (puedes quitar esto después de verificar)
-            System.out.println("Placa ingresada: " + vehiculo.getPlaca());
+        // Agrega la tarifa por minuto al modelo
+        model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
 
-            // Agrega los atributos al modelo
-            model.addAttribute("mensaje",
-                    "Vehículo con placa " + vehiculo.getPlaca() + " ha ingresado al parqueadero.");
+        // Muestra la placa ingresada en la consola (puedes quitar esto después de verificar)
+        System.out.println("Placa ingresada: " + vehiculoGuardado.getPlaca());
 
-            // Actualiza la tarifa según el tipo de vehículo
-            double tarifaPorMinuto = (vehiculo.getTipo().equalsIgnoreCase("carro"))
-                    ? tarifaService.obtenerTarifaPorMinutoCarro()
-                    : tarifaService.obtenerTarifaPorMinutoMoto();
+        // Agrega los atributos al modelo
+        model.addAttribute("mensaje",
+                "Vehículo con placa " + vehiculoGuardado.getPlaca() + " ha ingresado al parqueadero.");
 
-            // Agrega la tarifa por minuto al modelo
-            model.addAttribute("tarifaPorMinuto", tarifaPorMinuto);
-
-            return "index";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Ocurrió un error al procesar la entrada.");
-            return "errorPage";
-        }
+        return "index";
+    } catch (Exception e) {
+        e.printStackTrace();
+        model.addAttribute("error", "Ocurrió un error al procesar la entrada.");
+        return "errorPage";
     }
+}
+
 
     @RequestMapping(value = "/salida/{id}", method = RequestMethod.GET)
     public String mostrarFormularioSalida(@PathVariable Long id, Model model) {
@@ -171,7 +161,8 @@ public class VehiculoController {
                         ? tarifaService.obtenerTarifaPorMinutoCarro()
                         : tarifaService.obtenerTarifaPorMinutoMoto();
 
-                // Calcula el tiempo transcurrido en minutos utilizando el método de la clase Vehiculo
+                // Calcula el tiempo transcurrido en minutos utilizando el método de la clase
+                // Vehiculo
                 long minutosEstacionado = vehiculo.calcularMinutosEstacionado();
 
                 // Calcula la tarifa total
@@ -203,19 +194,55 @@ public class VehiculoController {
         return "listarVehiculosSalidos";
     }
 
-    @GetMapping("/buscarVehiculoSalido")
+    @GetMapping("/buscarPorPlaca")
+public String buscarPorPlaca(@RequestParam String placa, Model model) {
+    try {
+        // Busca todos los registros de vehículos (entradas y salidas) asociados a la placa
+        List<Vehiculo> vehiculos = vehiculoService.obtenerHistorialPorPlaca(placa);
+
+        // Agrega los resultados al modelo
+        model.addAttribute("vehiculosSalidos", vehiculos);
+
+        return "listarVehiculosSalidos";
+    } catch (Exception e) {
+        e.printStackTrace();
+        model.addAttribute("error", "Ocurrió un error al buscar el historial por placa.");
+        return "errorPage";
+    }
+}
+
+   /*  @GetMapping("/buscarVehiculoSalido")
     public String buscarVehiculoSalidoPorPlaca(@RequestParam String placa, Model model) {
         Vehiculo vehiculo = vehiculoService.buscarVehiculoSalidoPorPlaca(placa);
         model.addAttribute("vehiculoEncontrado", vehiculo);
-        return "resultadoBusquedaVehiculo";
+        return "mostrarVehiculoBuscado";
     }
 
-    @GetMapping("/vehiculo-salido")
-    public String mostrarVehiculoSalidoPorPlaca(@RequestParam String placa, Model model) {
-        Vehiculo vehiculoSalido = vehiculoService.buscarVehiculoConHoraSalidaPorPlaca(placa);
-        model.addAttribute("vehiculo", vehiculoSalido);
-        return "mostrarVehiculoSalido"; // Asegúrate de tener la vista correspondiente
-    }
-    
+     @GetMapping("/vehiculo-salido")
+    //public String mostrarVehiculoBuscado(@RequestParam String placa, Model model) {
+      //  try {
+         //   Vehiculo vehiculoBuscado = vehiculoService.buscarVehiculoConHoraSalidaPorPlaca(placa);
+
+         //   if (vehiculoBuscado != null) {
+         //       model.addAttribute("vehiculo", vehiculoBuscado);
+                return "mostrarVehiculoBuscado";
+            } else {
+                model.addAttribute("error", "Vehículo no encontrado");
+                return "errorPage";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Ocurrió un error al mostrar el vehículo buscado.");
+            return "errorPage";
+        }
+        
+
+    @GetMapping("/historial-vehiculos-salidos")
+    public String mostrarHistorialVehiculosSalidos(Model model) {
+        List<String> historialPlacas = vehiculoService.obtenerHistorialPlacasVehiculosSalidos();
+        model.addAttribute("historialPlacas", historialPlacas);
+        return "mostrarHistorialVehiculosSalidos";
+    }*/
+
     // Resto del código...
 }

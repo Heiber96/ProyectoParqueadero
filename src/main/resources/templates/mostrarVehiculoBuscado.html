@@ -1,0 +1,29 @@
+<!-- mostrarVehiculoBuscado.html -->
+
+<!-- ... (código anterior) -->
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Tipo</th>
+            <th>Hora de Entrada</th>
+            <th>Hora de Salida</th>
+            <!-- Agrega más columnas según tus necesidades -->
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:object="${vehiculo}">
+            <td th:text="${vehiculo.id}"></td>
+            <td th:text="${vehiculo.placa}"></td>
+            <td th:text="${vehiculo.tipo}"></td>
+            <td th:text="${#dates.format(vehiculo.horaEntrada, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(vehiculo.horaSalida, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <!-- Agrega más celdas según tus necesidades -->
+        </tr>
+    </tbody>
+</table>
+
+<!-- ... (código posterior) -->
+
